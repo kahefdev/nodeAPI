@@ -92,7 +92,7 @@ tourSchema.pre(/^find/, function (next) {
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log(this);
-  next();
+  next(Lakazet);
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
