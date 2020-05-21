@@ -8,6 +8,10 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A name is required'],
       unique: true,
     },
+    secret: {
+      type: Boolean,
+      default: false,
+    },
     slug: {
       type: String,
     },
@@ -78,6 +82,16 @@ tourSchema.pre('save', function (next) {
 
 tourSchema.post('save', function (doc, next) {
   console.log(doc);
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secret: { $ne: true } });
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(this);
   next();
 });
 

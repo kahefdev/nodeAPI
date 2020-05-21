@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+
 const morgan = require('morgan');
 const toursRouter = require('./routes/toursRouter');
 const usersRouter = require('./routes/usersRouter');
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.getTime = new Date().toISOString();
+  console.log(req.getTime);
   next();
 });
 
