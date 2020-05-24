@@ -7,6 +7,8 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A name is required'],
       unique: true,
+      minlength: [10, 'minimum length should be 10 characters'],
+      maxlength: [40, 'minimum length should be 40 characters'],
     },
     secret: {
       type: Boolean,
@@ -22,10 +24,16 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tror mush have a difficulty'],
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message: 'outside value inserterd',
+      },
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
+      min: 1.0,
+      max: 5.0,
     },
     ratingQuantity: {
       type: Number,
@@ -90,9 +98,9 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(this);
-  next(Lakazet);
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secret: { $ne: true } } });
+  next();
 });
 
 const Tour = mongoose.model('Tour', tourSchema);

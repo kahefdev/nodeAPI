@@ -4,10 +4,15 @@ const dotenv = require('dotenv');
 const Tour = require('./../../model/toursModel');
 dotenv.config({ path: `../../config.env` });
 
-let DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD
-);
+//Hosting database locally!
+
+// let DB = process.env.DATABASE.replace(
+//   '<PASSWORD>',
+//   process.env.DATABASE_PASSWORD
+// );
+
+//Hosting database locally
+let DB = process.env.DATABASE;
 
 mongoose
   .connect(DB, {
@@ -42,7 +47,7 @@ const importDat = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
-    console.log('Data Successfully loaded');
+    console.log('Data Deleted Successfully');
     process.exit();
   } catch (err) {
     console.log(err);
