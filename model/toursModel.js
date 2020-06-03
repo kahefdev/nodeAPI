@@ -11,7 +11,7 @@ const tourSchema = new mongoose.Schema(
       minlength: [10, 'minimum length should be 10 characters'],
       maxlength: [40, 'minimum length should be 40 characters'],
       //Using Validator JS to validate fields
-      validate: [validator.default.isEmail, 'The name cannot be with spaces'],
+      // validate: [validator.default.isEmail, 'The name cannot be with spaces'],
     },
     secret: {
       type: Boolean,
