@@ -6,6 +6,12 @@ const morgan = require('morgan');
 const toursRouter = require('./routes/toursRouter');
 const usersRouter = require('./routes/usersRouter');
 
+app.use((req, res, next) => {
+  req.reqTime = new Date().toISOString;
+
+  next();
+});
+
 // app.use(morgan('dev'));
 app.use(express.static(`${__dirname}/public/`));
 app.use(express.json());
