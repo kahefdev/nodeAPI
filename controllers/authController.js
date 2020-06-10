@@ -45,9 +45,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!req.headers.authorization)
     return next(new AppError('Something went wrong, please login', 401));
   let token = req.headers.authorization.split(' ');
-  console.log(token[1]);
-
-  let decode = promisify(jwt.verify)(token[1], process.env.JWT_SECRET);
+  let decode = await promisify(jwt.verify)(token[1], process.env.JWT_SECRET);
+  console.log(decode);
+  let currentUser = await User.findById(decode.id);
+  console.log(currentUser);
+  if (!currentUser) return next(new AppError('User no longer exists', 401));
 
   next();
 });
