@@ -2,6 +2,7 @@ const User = require('../model/userModel');
 const jwt = require('jsonwebtoken');
 const catchAsync = require('../utils/catchAsync.js');
 const AppError = require('../utils/AppError.js');
+const { promisify } = require('util');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -38,4 +39,26 @@ exports.login = catchAsync(async (req, res, next) => {
 
   let token = generateToken(user._id);
   res.status(200).json({ status: 'success', token });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  if (!req.headers.authorization)
+    return next(new AppError('Something went wrong, please login', 401));
+  let token = req.headers.authorization.split(' ');
+  console.log(token[1]);
+  // await jwt.verify(token[1], process.env.JWT_SECRET, (err, decode) => {
+  //   if (!err) {
+  //     console.log(decode);
+  //     next();
+  //   } else {
+  //     return next(new AppError('Token verificaiton failes', 401));
+  //   }
+  //   // res.json({ message: 'token varification failed' });
+  // });
+
+  let result = jwt.verify(token[1], process.env.JWT_SECRET, (err, decode) => {
+    if (!err) return next();
+  });
+
+  // next();
 });
