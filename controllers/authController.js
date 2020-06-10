@@ -46,19 +46,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(new AppError('Something went wrong, please login', 401));
   let token = req.headers.authorization.split(' ');
   console.log(token[1]);
-  // await jwt.verify(token[1], process.env.JWT_SECRET, (err, decode) => {
-  //   if (!err) {
-  //     console.log(decode);
-  //     next();
-  //   } else {
-  //     return next(new AppError('Token verificaiton failes', 401));
-  //   }
-  //   // res.json({ message: 'token varification failed' });
-  // });
 
-  let result = jwt.verify(token[1], process.env.JWT_SECRET, (err, decode) => {
-    if (!err) return next();
-  });
+  let decode = promisify(jwt.verify)(token[1], process.env.JWT_SECRET);
 
-  // next();
+  next();
 });
