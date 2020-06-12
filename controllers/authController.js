@@ -11,13 +11,14 @@ const generateToken = (id) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  let { name, email, password, passwordConfirm, pca } = req.body;
+  let { name, email, password, passwordConfirm, pca, role } = req.body;
   let createdUser = await User.create({
     name,
     email,
     password,
     passwordConfirm,
     pca,
+    role,
   });
   //The token header is created automatically
   let token = jwt.sign({ id: createdUser._id }, process.env.JWT_SECRET, {
@@ -60,6 +61,13 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   //Grant access to protected route
   req.user = user;
-  console.log('test');
   next();
 });
+
+exports.restrict = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      return next(new AppError('User not authorized', 403));
+    next();
+  };
+};

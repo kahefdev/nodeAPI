@@ -72,14 +72,16 @@ exports.updateTour = async (req, res) => {
   }
 };
 
-exports.deleteTour = async (req, res) => {
+exports.deleteTour = async (req, res, next) => {
   let { id } = req.params;
+  console.log(id);
+  let tour = await Tour.findByIdAndDelete(id);
 
-  await Tour.findByIdAndDelete(id);
+  if (!tour) return next(new AppError('Tour not found', 404));
 
-  if (!tours) return next(new AppError('Tour not found', 404));
-
-  res.status(204);
+  res
+    .status(200)
+    .json({ status: 'Success', message: 'User deleted successfully' });
 };
 
 exports.getTourStats = catchAsync(async (req, res) => {
