@@ -7,12 +7,17 @@ const {
   updateUser,
 } = require('../controllers/userController.js');
 
-const { signup, login, protect } = require('../controllers/authController.js');
+const {
+  signup,
+  login,
+  protect,
+  forgotPassword,
+} = require('../controllers/authController.js');
 const router = express.Router();
 
 router.post('/signup', signup);
 router.post('/login', login);
-
+router.post('/forgotPassword', forgotPassword);
 router
   .route('/')
   .get(protect, getAllUsers)

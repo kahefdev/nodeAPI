@@ -71,3 +71,15 @@ exports.restrict = (...roles) => {
     next();
   };
 };
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  console.log('Forgot password invoked');
+  let { email } = req.body;
+  if (!email) return next(new AppError('Email required', 400));
+
+  let user = await User.findOne({ email });
+  if (!user) return next(new AppError('User not found', 400));
+  let token = await user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+  res.json({ token });
+});

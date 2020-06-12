@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator').default;
 const bcrype = require('bcrypt');
-
+const crypto = require('crypto');
 let userSchema = new mongoose.Schema({
   name: {
     required: [true, 'A name is required'],
@@ -37,6 +37,7 @@ let userSchema = new mongoose.Schema({
     },
   },
   pca: Date,
+  passwordResetToken: String,
 });
 
 userSchema.pre('save', async function (next) {
@@ -61,6 +62,18 @@ userSchema.methods.changedPassword = async function (JWTTimestamp) {
   }
   return false;
 };
+
+userSchema.methods.createPasswordResetToken = function () {
+  let resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log(resetToken, this.passwordResetToken);
+  return resetToken;
+};
+
 let User = mongoose.model('User', userSchema);
 
 module.exports = User;
