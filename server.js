@@ -25,7 +25,7 @@ let server = app.listen(PORT, () => {
 });
 
 process.on('unhandledRejection', (err) => {
-  console.log('💥', 'Unhandled Rejection', '💥');
+  console.log('💥', err, '💥');
   server.close(() => {
     process.exit(1);
   });
