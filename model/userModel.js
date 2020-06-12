@@ -14,6 +14,9 @@ let userSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Invalid email address'],
   },
+  userTypes: {
+    enum: ['user', 'admin'],
+  },
   photo: String,
   password: {
     type: String,
