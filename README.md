@@ -1,3 +1,1 @@
-This is a Node API for a website called **Natours**.
-
-Test code 999
+**This is a backend node API with best coding standards/practices**
