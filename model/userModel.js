@@ -7,9 +7,6 @@ let userSchema = new mongoose.Schema({
     required: [true, 'A name is required'],
     type: String,
   },
-  userType: {
-    enum: ['user', 'administator'],
-  },
   email: {
     required: [true, 'Email is required'],
     type: String,
