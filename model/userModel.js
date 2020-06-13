@@ -38,6 +38,12 @@ let userSchema = new mongoose.Schema({
   },
   pca: Date,
   passwordResetToken: String,
+  resetTokenCreated: Date,
+});
+
+userSchema.pre('save', function () {
+  if (!this.isModified(password) || this.isNew) return next();
+  this.pca = Date.now() - 1000;
 });
 
 userSchema.pre('save', async function (next) {
@@ -51,6 +57,8 @@ userSchema.methods.correctPass = async function (
   currentPassword,
   orignalPassword
 ) {
+  console.log('Correct password method invoked');
+  console.log(currentPassword, orignalPassword);
   return await bcrype.compare(currentPassword, orignalPassword);
 };
 
@@ -70,7 +78,8 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest('hex');
 
-  console.log(resetToken, this.passwordResetToken);
+  // console.log(resetToken, this.passwordResetToken);
+  this.resetTokenCreated = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
 

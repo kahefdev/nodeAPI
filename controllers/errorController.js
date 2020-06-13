@@ -20,6 +20,7 @@ handleDuplicateErrorDB = (err) => {
 };
 
 sendErrorDev = (err, res) => {
+  console.log('sending error dev');
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
