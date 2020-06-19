@@ -12,9 +12,28 @@ const generateToken = (id) => {
   });
 };
 
+const createSendToken = (user, statusCode, res) => {
+  token = generateToken(user.id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'pr`oduction') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+  user.password = undefined;
+  res.status(statusCode).json({
+    status: 'Success',
+    message: user,
+    token,
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   let { name, email, password, passwordConfirm, pca, role } = req.body;
-  let createdUser = await User.create({
+  let user = await User.create({
     name,
     email,
     password,
@@ -23,11 +42,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role,
   });
   //The token header is created automatically
-  let token = jwt.sign({ id: createdUser._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-
-  res.status(201).json({ status: 'Success', data: createdUser, token });
+  createSendToken(user, 200, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -37,6 +52,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide email and password', 401));
   }
   let user = await User.findOne({ email }).select('+password');
+
   if (!user || !(await user.correctPass(password, user.password))) {
     return next(new AppError('Invalid username or password', 400));
   }
@@ -153,10 +169,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   //4. Set token to null, log user out.
   // req.headers.authorization = null;
   console.log(user);
-  newToken = generateToken(user._id);
-  res.status(200).json({
-    status: 'Success',
-    message: 'password cahnged successfullt',
-    token: newToken,
-  });
+
+  createSendToken(user, 200, res);
 });
