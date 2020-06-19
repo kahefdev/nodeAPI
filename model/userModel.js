@@ -39,11 +39,21 @@ let userSchema = new mongoose.Schema({
   pca: Date,
   passwordResetToken: String,
   resetTokenCreated: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre('save', function () {
   if (!this.isModified(password) || this.isNew) return next();
   this.pca = Date.now() - 1000;
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
 });
 
 userSchema.pre('save', async function (next) {

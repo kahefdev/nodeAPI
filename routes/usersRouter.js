@@ -5,6 +5,8 @@ const {
   deleteUser,
   getUserId,
   updateUser,
+  updateMe,
+  deleteMe,
 } = require('../controllers/userController.js');
 
 const {
@@ -22,13 +24,10 @@ router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updatePassword', protect, updatePassword);
+router.patch('/updateMe', protect, updateMe);
+router.delete('/deleteMe', protect, deleteMe);
 
-router
-  .route('/')
-  .get(protect, getAllUsers)
-  .patch(updateUser)
-  .delete(deleteUser);
-
-router.route('/:id').get(getUserId).patch(updateUser).delete(deleteUser);
+router.route('/').get(protect, getAllUsers).patch(updateUser);
+router.route('/:id').get(getUserId).patch(updateUser);
 
 module.exports = router;
