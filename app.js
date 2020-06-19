@@ -6,7 +6,11 @@ const morgan = require('morgan');
 const toursRouter = require('./routes/toursRouter');
 const usersRouter = require('./routes/usersRouter');
 const rateLimit = require('express-rate-limit');
-
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const expressMongoSanitize = require('express-mongo-sanitize');
+app.use(helmet());
 app.use((req, res, next) => {
   req.reqTime = new Date().toISOString;
 
@@ -14,7 +18,7 @@ app.use((req, res, next) => {
 });
 
 const limiter = rateLimit({
-  max: 3,
+  max: 100,
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try in an hour',
 });
@@ -23,7 +27,14 @@ const limiter = rateLimit({
 app.use(morgan('dev'));
 app.use('/api', limiter);
 app.use(express.static(`${__dirname}/public/`));
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+app.use(expressMongoSanitize());
+app.use(xss());
+app.use(
+  hpp({
+    whitelist: ['duration', 'ratingsAverage'],
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
