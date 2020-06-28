@@ -6,13 +6,13 @@ dotenv.config({ path: `../../config.env` });
 
 //Hosting database locally!
 
-// let DB = process.env.DATABASE.replace(
-//   '<PASSWORD>',
-//   process.env.DATABASE_PASSWORD
-// );
+let DB = process.env.DATABASE.replace(
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD
+);
 
 //Hosting database locally
-let DB = process.env.DATABASE;
+// let DB = process.env.DATABASE;
 
 mongoose
   .connect(DB, {
@@ -28,9 +28,7 @@ mongoose
     console.log(err);
   });
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 const importDat = async () => {
   try {
