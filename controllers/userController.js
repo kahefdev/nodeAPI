@@ -1,6 +1,7 @@
 const User = require('../model/userModel.js');
 const catchAsync = require('../utils/catchAsync.js');
 const AppError = require('../utils/AppError.js');
+const Factory = require("../controllers/handlerFactory");
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   console.log(req.user);
@@ -15,19 +16,7 @@ exports.getUserId = (req, res) => {
   });
 };
 
-exports.deleteUser = catchAsync(async (req, res) => {
-  const deletedUser = await User.deleteOne({ email: req.body.email });
-  res
-    .status(200)
-    .json({ status: 'Success', message: 'User Deleted Successfully' });
-});
-
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'erro',
-    message: 'This route is not yet defined',
-  });
-};
+exports.deleteUser = Factory.deleteOne(User);
 
 const filterObj = (dataObj, filterObj) => {
   let filteredObj = {};
