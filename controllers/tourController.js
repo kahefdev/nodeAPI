@@ -2,6 +2,7 @@ const Tour = require('../model/toursModel');
 const APIfeatures = require('../utils/APIfeatures.js');
 const AppError = require('../utils/AppError.js');
 const catchAsync = require('../utils/catchAsync.js');
+const Factory = require("../controllers/handlerFactory");
 exports.getAllTours = catchAsync(async (req, res) => {
 console.log(req.query);
 
@@ -72,17 +73,20 @@ exports.updateTour = async (req, res) => {
   }
 };
 
-exports.deleteTour = async (req, res, next) => {
-  let { id } = req.params;
-  console.log(id);
-  let tour = await Tour.findByIdAndDelete(id);
 
-  if (!tour) return next(new AppError('Tour not found', 404));
+exports.deleteTour = Factory.deleteOne(Tour);
 
-  res
-    .status(200)
-    .json({ status: 'Success', message: 'User deleted successfully' });
-};
+// exports.deleteTour = async (req, res, next) => {
+//   let { id } = req.params;
+//   console.log(id);
+//   let tour = await Tour.findByIdAndDelete(id);
+
+//   if (!tour) return next(new AppError('Tour not found', 404));
+
+//   res
+//     .status(200)
+//     .json({ status: 'Success', message: 'User deleted successfully' });
+// };
 
 exports.getTourStats = catchAsync(async (req, res) => {
   let year = req.params.year * 1;
