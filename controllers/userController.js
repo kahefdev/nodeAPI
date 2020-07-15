@@ -39,7 +39,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'Success', message: null });
 });
 
-exports.updateMe = catchAsync(async (req, res, next) => {
+exports.updateUser = catchAsync(async (req, res, next) => {
   console.log(req.body);
   if (req.body.password || req.body.connfirmPassword)
     return next(
