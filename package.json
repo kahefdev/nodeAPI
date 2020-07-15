@@ -1,7 +1,7 @@
 {
   "name": "natours",
   "version": "1.0.0",
-  "description": "",
+  "description": "**This is a backend node API with best coding standards/practices**",
   "main": "app.js",
   "scripts": {
     "start:prod": "NODE_ENV=production nodemon server.js",
@@ -29,5 +29,13 @@
   },
   "devDependencies": {
     "ndb": "^1.1.5"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kahefdev/nodeAPI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kahefdev/nodeAPI/issues"
+  },
+  "homepage": "https://github.com/kahefdev/nodeAPI#readme"
 }
