@@ -79,6 +79,13 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have an image'],
     },
+    guides :[
+      {
+      type:mongoose.Schema.ObjectId,
+      ref : 'User'
+      }
+    ],
+
     images: [String],
     createdAt: {
       type: Date,
@@ -130,6 +137,11 @@ tourSchema.post('save', function (doc, next) {
   console.log(doc);
   next();
 });
+
+tourSchema.pre(/^find/,function(next){
+  this.populate({path:'guides',select:'-__v'})
+  next();
+})
 
 tourSchema.pre(/^find/, function (next) {
   this.find({ secret: { $ne: true } });

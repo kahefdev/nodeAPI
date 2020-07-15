@@ -5,6 +5,7 @@ const AppError = require('./utils/AppError.js');
 const morgan = require('morgan');
 const toursRouter = require('./routes/toursRouter');
 const usersRouter = require('./routes/usersRouter');
+const reviewRouter = require('./routes/reviewRouter');
 const rateLimit = require('express-rate-limit');
 
 app.use((req, res, next) => {
@@ -27,10 +28,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', usersRouter);
-app.get('/test-noip', (req, res, next) => {
-  console.log('testing no-ip functionality');
-  res.status(200).send('This is working with noip');
-});
+app.use('/api/v1/review', reviewRouter);
+
 
 app.all('*', (req, res, next) => {
   // res.status(404).json({
