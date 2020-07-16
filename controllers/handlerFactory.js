@@ -45,13 +45,17 @@ exports.deleteOne = Model => catchAsync(async (req, res, next) => {
 
   exports.getAll = Model =>catchAsync(async (req, res) => {
     console.log(req.query);
+
+    let filter = {};
+    if(req.params.tourId) filter = {tour:req.params.tourId}
     
       const features = new APIfeatures(Model.find(), req.query)
         .filter()
         .sort()
         .fields()
         .paginate();
-      const doc = await features.query;
+      const doc = await features.query
+      // const doc = await features.query.explain();
     
       res.status(200).json({
         status: 'success',
@@ -63,9 +67,8 @@ exports.deleteOne = Model => catchAsync(async (req, res, next) => {
     });
 
     exports.getOne = Model => catchAsync(async (req, res, next) => {
-      console.log()
-      console.log(req.user.id);
-      const doc = await Model.findById(req.user.id);
+      
+      const doc = await Model.findById(req.params.id);
     
       if (!doc) {
         return next(new AppError('Tour not found', 404));
