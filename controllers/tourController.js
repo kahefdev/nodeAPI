@@ -3,24 +3,19 @@ const APIfeatures = require('../utils/APIfeatures.js');
 const AppError = require('../utils/AppError.js');
 const catchAsync = require('../utils/catchAsync.js');
 const Factory = require("../controllers/handlerFactory");
-exports.getAllTours = catchAsync(async (req, res) => {
-console.log(req.query);
 
-  const features = new APIfeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .fields()
-    .paginate();
-  const tours = await features.query;
 
-  res.status(200).json({
-    status: 'success',
-    entries: tours.length,
-    data: {
-      tours: tours,
-    },
-  });
-});
+exports.updateTour = Factory.updateOne(Tour);
+exports.deleteTour = Factory.deleteOne(Tour);
+exports.addTour = Factory.createOne(Tour);
+
+exports.getAllTours = Factory.getAll(Tour)
+
+exports.getTourById = Factory.getOne(Tour);
+
+
+
+
 
 exports.top5Alising = (req, res, next) => {
   req.query = {
@@ -39,35 +34,6 @@ exports.cheapestAlising = (req, res, next) => {
   };
   next();
 };
-
-exports.getTourById = catchAsync(async (req, res, next) => {
-  console.log(req.params.id);
-
-  const tours = await Tour.findById(req.params.id);
-
-  if (!tours) {
-    return next(new AppError('Tour not found', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: tours,
-  });
-});
-
-
-
-// exports.deleteTour = async (req, res, next) => {
-//   let { id } = req.params;
-//   console.log(id);
-//   let tour = await Tour.findByIdAndDelete(id);
-
-//   if (!tour) return next(new AppError('Tour not found', 404));
-
-//   res
-//     .status(200)
-//     .json({ status: 'Success', message: 'User deleted successfully' });
-// };
 
 exports.getTourStats = catchAsync(async (req, res) => {
   let year = req.params.year * 1;
@@ -104,27 +70,13 @@ exports.getTourStats = catchAsync(async (req, res) => {
       $limit: 6,
     },
   ]);
-
-  // const stats = await Tour.aggregate([
-  //   {
-  //     $match: { ratingsAverage: { $gte: 4.5 } },
-  //   },
-  //   {
-  //     $group: {
-  //       _id: null,
-  //       avgRating: { $avg: '$ratingsAverage' },
-  //       avgPrice: { $avg: '$price' },
-  //       minPrice: { $min: '$price' },
-  //       maxPrice: { $max: '$price' },
-  //     },
-  //   },
-  // ]);
   res.status(200).json({
     message: 'Success',
     data: { stats },
   });
 });
 
-exports.updateTour = Factory.updateOne(Tour);
-exports.deleteTour = Factory.deleteOne(Tour);
-exports.addTour = Factory.createOne(Tour);
+
+
+
+

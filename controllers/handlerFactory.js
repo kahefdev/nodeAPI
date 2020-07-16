@@ -1,6 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/AppError");
-
+const APIfeatures = require("../utils/APIfeatures");
 
 exports.createOne = Model =>catchAsync(async(req,res,next)=>{
 
@@ -41,3 +41,39 @@ exports.deleteOne = Model => catchAsync(async (req, res, next) => {
     }
   });
   
+
+
+  exports.getAll = Model =>catchAsync(async (req, res) => {
+    console.log(req.query);
+    
+      const features = new APIfeatures(Model.find(), req.query)
+        .filter()
+        .sort()
+        .fields()
+        .paginate();
+      const doc = await features.query;
+    
+      res.status(200).json({
+        status: 'success',
+        entries: doc.length,
+        data: {
+          doc
+        },
+      });
+    });
+
+    exports.getOne = Model => catchAsync(async (req, res, next) => {
+      console.log()
+      console.log(req.user.id);
+      const doc = await Model.findById(req.user.id);
+    
+      if (!doc) {
+        return next(new AppError('Tour not found', 404));
+      }
+    
+      res.status(200).json({
+        status: 'success',
+        data: doc,
+      });
+    });
+    
