@@ -11,3 +11,22 @@ exports.deleteOne = Model => catchAsync(async (req, res, next) => {
       .json({ status: 'Success', message: 'Item deleted successfully' });
   });
 
+
+  exports.updateOne = Model => catchAsync(async (req, res) => {
+    try {
+      const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+      res.status(200).json({
+        message: 'success',
+        data: doc,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: 'error',
+        data: err,
+      });
+    }
+  });
+  

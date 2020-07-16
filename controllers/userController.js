@@ -39,21 +39,26 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'Success', message: null });
 });
 
-exports.updateUser = catchAsync(async (req, res, next) => {
-  console.log(req.body);
-  if (req.body.password || req.body.connfirmPassword)
-    return next(
-      new AppError('Password cannot be updated, something went wrong', 400)
-    );
+//Only for administrators
+exports.updateUser = Factory.updateOne(User);
 
-  let userData = filterObj(req.body, ['name', 'email']);
-  console.log(userData);
-  let userUpdated = await User.findByIdAndUpdate(req.user.id, userData, {
-    new: true,
-    runValidators: true,
-  });
+exports.deleteUser = Factory.deleteOne(User);
 
-  res.status(200).json({ status: 'Success', data: userUpdated });
+// exports.updateUser = catchAsync(async (req, res, next) => {
+//   console.log(req.body);
+//   if (req.body.password || req.body.connfirmPassword)
+//     return next(
+//       new AppError('Password cannot be updated, something went wrong', 400)
+//     );
 
-  // res.json(userUpdated);
-});
+//   let userData = filterObj(req.body, ['name', 'email']);
+//   console.log(userData);
+//   let userUpdated = await User.findByIdAndUpdate(req.user.id, userData, {
+//     new: true,
+//     runValidators: true,
+//   });
+
+//   res.status(200).json({ status: 'Success', data: userUpdated });
+
+//   // res.json(userUpdated);
+// });

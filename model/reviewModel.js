@@ -6,7 +6,6 @@ const reviewSchema =new mongoose.Schema({
     review:{
         type:String,
         required:true,
-        unique:[true,'A review already exists with this sentence']
     },
     rating:{
         type:Number,

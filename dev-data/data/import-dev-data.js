@@ -1,7 +1,7 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const Tour = require('./../../model/toursModel');
+const Review = require('./../../model/reviewModel');
 dotenv.config({ path: `../../config.env` });
 
 //Hosting database locally!
@@ -28,11 +28,11 @@ mongoose
     console.log(err);
   });
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
+const review = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8'));
 
 const importDat = async () => {
   try {
-    await Tour.create(tours);
+    await Review.create(review);
     console.log('Data Successfully loaded');
     process.exit();
   } catch (err) {
@@ -44,7 +44,7 @@ const importDat = async () => {
 
 const deleteData = async () => {
   try {
-    await Tour.deleteMany();
+    await Review.deleteMany();
     console.log('Data Deleted Successfully');
     process.exit();
   } catch (err) {
