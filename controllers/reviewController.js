@@ -1,11 +1,6 @@
 const Review = require('../model/reviewModel.js');
 const catchAsync = require('../utils/catchAsync.js');;
 const Factory = require('../controllers/handlerFactory');
-exports.createReview = catchAsync(async(req,res,next)=>{
-        const newReview = await Review.create(req.body);
-        res.status(201).json({ status:"Success",data:newReview});
-}
-)
 
 exports.getReview = catchAsync(async(req,res,next)=>{
     let allReviews = await Review.find().populate([{path:'user',select:'name'},{path:'tour',select:"name"}]);
@@ -24,3 +19,4 @@ exports.oneReview =catchAsync(async(req,res,next)=>{
 
 exports.updateReviw = Factory.updateOne(Review);
 exports.deleteReview = Factory.deleteOne(Review);
+exports.createReview = Factory.createOne(Review);
