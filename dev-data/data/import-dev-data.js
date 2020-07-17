@@ -1,64 +1,63 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const Tour = require('./../../model/tourModel');
 const Review = require('./../../model/reviewModel');
-const Tour = require('./../../model/toursModel');
 const User = require('./../../model/userModel');
-dotenv.config({ path: `../../config.env` });
 
-//Hosting database locally!
+dotenv.config({ path: '../../config.env' });
 
-let DB = process.env.DATABASE.replace(
+console.log(process.env.DATABASE);
+
+const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
 );
-
-//Hosting database locally
-// let DB = process.env.DATABASE;
 
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
   })
-  .then((con) => {
-    console.log('DB connection successful');
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  .then(() => console.log('DB connection successful!'));
 
-const data = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
+// READ JSON FILE
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
+);
 
-const importDat = async () => {
+// IMPORT DATA INTO DB
+const importData = async () => {
   try {
-    await User.create(data,{validateBeforeSave:false});
-    console.log('Data Successfully loaded');
-    process.exit();
+    await Tour.create(tours);
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
+    console.log('Data successfully loaded!');
   } catch (err) {
     console.log(err);
   }
+  process.exit();
 };
 
-//Delete all data from collection
-
+// DELETE ALL DATA FROM DB
 const deleteData = async () => {
   try {
+    await Tour.deleteMany();
     await User.deleteMany();
-    console.log('Data Deleted Successfully');
-    process.exit();
+    await Review.deleteMany();
+    console.log('Data successfully deleted!');
   } catch (err) {
     console.log(err);
   }
+  process.exit();
 };
 
 if (process.argv[2] === '--import') {
-  importDat();
+  importData();
 } else if (process.argv[2] === '--delete') {
   deleteData();
-} else {
-  console.log('invalid option choosen');
-  process.exit();
 }
