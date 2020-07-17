@@ -1,63 +1,78 @@
 const express = require('express');
-const app = express();
-const globalErrorHandler = require('./controllers/errorController');
-const AppError = require('./utils/AppError.js');
 const morgan = require('morgan');
-const toursRouter = require('./routes/toursRouter');
-const usersRouter = require('./routes/usersRouter');
-const reviewRouter = require('./routes/reviewRouter');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
-app.use((req, res, next) => {
-  req.reqTime = new Date().toISOString;
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controllers/errorController');
+const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
-  next();
-});
+const app = express();
 
+// 1) GLOBAL MIDDLEWARES
+// Set security HTTP headers
+app.use(helmet());
+
+// Development logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+// Limit requests from same API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try in an hour',
+  message: 'Too many requests from this IP, please try again in an hour!'
+});
+app.use('/api', limiter);
+
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
+
+// Prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price'
+    ]
+  })
+);
+
+// Serving static files
+app.use(express.static(`${__dirname}/public`));
+
+// Test middleware
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  // console.log(req.headers);
+  next();
 });
 
-// app.use(morgan('dev'));
-app.use(morgan('dev'));
-app.use('/api', limiter);
-app.use(express.static(`${__dirname}/public/`));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use('/api/v1/tours', toursRouter);
-app.use('/api/v1/users', usersRouter);
-app.use('/api/v1/review', reviewRouter);
-
+// 3) ROUTES
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
-  // res.status(404).json({
-  //   status: 'failed request',
-  //   message: `Cant find url ${req.originalUrl}`,
-  // });
-
-  // const err = new Error(`Cant find url ${req.originalUrl}`);
-  // err.status = 'Fail';
-  // err.statusCode = 404;
-  // next(err);
-
-  next(new AppError(`Cant find url ${req.originalUrl}`, 404));
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 app.use(globalErrorHandler);
 
 module.exports = app;
-
-// const { getUsers } = require('./queries.js');
-// const lptRouter = require('./routes/lptRouter.js');
-// const { pracNode } = require('./controllers/pracNode.js');
-// const pgRouter = require('./routes/pgRouter.js');
-// const industryRouter = require('./routes/industryRouter.js');
-// const { getOverview } = require('./controllers/lptController');
-// app.get('/overview', getOverview);
-// app.get('/node', pracNode);
-// app.use('/lpt', lptRouter);
-// app.use('/industry', industryRouter);
-// app.use('/dvdrental/users', pgRouter);
-// app.get('/users/:id', getUsers);
