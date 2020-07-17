@@ -1,5 +1,6 @@
 //review/rating/createdAt/ref to tour/ref to user;
 const mongoose = require('mongoose')
+const Tour = require('../model/toursModel');
 
 const reviewSchema =new mongoose.Schema({
    
@@ -15,16 +16,16 @@ const reviewSchema =new mongoose.Schema({
         type:Date,
         default:new Date(),
     },
-    tour:[
+    tour:
         {
             type:mongoose.Schema.ObjectId,
             ref : 'Tour',
         }
-    ],
-    user:[{
+    ,
+    user:{
         type:mongoose.Schema.ObjectId,
         ref:'User',
-    }],
+    },
 }, {strict:false}, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -38,12 +39,23 @@ const reviewSchema =new mongoose.Schema({
           nRating:{$sum : 1},
           averageRating : {$avg : '$rating'}
       }}])
+
+      await Tour.findByIdAndUpdate(tourId,{
+          ratingQuantity:stats[0].nRating,
+          ratingsAverage:stats[0].averageRating,
+      })
+
     console.log(stats);
     };
 
 
-reviewSchema.post('save',function(next){
 
+reviewSchema.pre(/^find/,function(next){
+    this.populate({path:'user',select:'name -_id'}).populate({path:'tour'})
+    next();
+})
+
+reviewSchema.post('save',function(){
     this.constructor.calcAverageRating(this.tour); 
 })
 
